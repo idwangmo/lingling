@@ -1,6 +1,4 @@
-package xyz.idwangmo.lingling.model.response
-
-import java.util.stream.StreamSupport
+package top.idwangmo.lingling.model.response
 
 data class LinglingBaseResponse(var statusCode: String?, var methodName: String?)
 
@@ -22,5 +20,4 @@ data class LinglingDeviceQueryResponse(
         var statusCode: String?,
         var methodName: String?,
         var requestResult: List<RequestResult>
-
 )

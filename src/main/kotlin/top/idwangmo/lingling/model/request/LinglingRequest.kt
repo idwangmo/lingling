@@ -1,4 +1,4 @@
-package xyz.idwangmo.lingling.model.request
+package top.idwangmo.lingling.model.request
 
 
 data class LinglingRequest(var requestParam: Any?, var header: Header)
@@ -18,8 +18,4 @@ data class LingLingUpdateDeviceRequest(
         var deviceId: Long,
         var newDeviceName: String?,
         var newDeviceCode: String?
-)
-
-data class LinglingUpdateDeviceRequest(
-        var deviceId: String
 )

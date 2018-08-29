@@ -1,22 +1,16 @@
-package xyz.idwangmo.lingling.config
+package top.idwangmo.lingling.config
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.stereotype.Component
-
-@Component
-@ConfigurationProperties("lingling")
-class LingLingConfig {
-    lateinit var signature: String
-    lateinit var token: String
-    lateinit var openToken: String
-    lateinit var strKey: String
-}
+data class LingLingConfig(
+        var signature: String,
+        var token: String,
+        var openToken: String,
+        var strKey: String
+)
 
 
 class LinglingURLConfig {
 
     companion object {
-
 
         val URL = "http://llkmc.linglingkaimen.com:8889/cgi-bin/"
 

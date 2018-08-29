@@ -1,26 +1,18 @@
-package xyz.idwangmo.lingling.service
+package top.idwangmo.lingling.service
 
 import com.google.gson.Gson
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import org.springframework.stereotype.Service
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
-import org.springframework.web.client.RestTemplate
-import xyz.idwangmo.lingling.config.LingLingConfig
-import xyz.idwangmo.lingling.config.LinglingURLConfig
-import xyz.idwangmo.lingling.exception.LingLingException
-import xyz.idwangmo.lingling.model.request.*
-import xyz.idwangmo.lingling.model.response.*
+import top.idwangmo.lingling.api.LingLingRequestInterface
+import top.idwangmo.lingling.config.LingLingConfig
+import top.idwangmo.lingling.config.LinglingURLConfig
+import top.idwangmo.lingling.exception.LingLingException
+import top.idwangmo.lingling.model.request.*
+import top.idwangmo.lingling.model.response.*
+import top.idwangmo.lingling.util.LinglingRequestStaticsSingleton
 
-@Service
+
 class LingLingService {
 
-    @Autowired
     lateinit var lingLingConfig: LingLingConfig
-
 
     /**
      * 获取令令Id
@@ -51,7 +43,7 @@ class LingLingService {
     /**
      * 更新设备
      */
-    fun updateDevice(request: LinglingUpdateDeviceRequest) {
+    fun updateDevice(request: LingLingUpdateDeviceRequest) {
         this.sendRequest(request, LinglingURLConfig.UPDATE_DEVICE)
     }
 
@@ -59,34 +51,29 @@ class LingLingService {
      * 查询设备列表
      */
     fun queryDevices(): List<RequestResult> {
-        val body = this.sendRequest(null, LinglingURLConfig.QUERY_DEVICE_LIST)
+        val body = this.sendRequest(Any(), LinglingURLConfig.QUERY_DEVICE_LIST)
+
         val response = gson().fromJson<LinglingDeviceQueryResponse>(body, LinglingDeviceQueryResponse::class.java)
         return response.requestResult
     }
 
-    fun sendRequest(any: Any?, action: String): String? {
-        val lingLingRequest = LinglingRequest(requestParam = any, header = Header(lingLingConfig.signature, lingLingConfig.openToken))
+    private fun sendRequest(any: Any?, action: String): String? {
+
+        val lingLingRequest = LinglingRequest(requestParam = any, header = Header(lingLingConfig.signature, lingLingConfig.token))
 
         val message = gson().toJson(lingLingRequest)
 
-        val restTemplate = RestTemplate()
+        val retrofit = LinglingRequestStaticsSingleton.getInstance()
 
-        val headers = HttpHeaders()
+        val linglingRequest = retrofit.create(LingLingRequestInterface::class.java)
 
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+        val execute = linglingRequest.sendRequest(action = action + lingLingConfig.openToken , message =  message)
 
-        val map = LinkedMultiValueMap<String, String>()
-        map.add("MESSAGE", message)
+        val body = execute.execute()
 
-        val request = HttpEntity<MultiValueMap<String, String>>(map, headers)
+        this.verifyStatusCode(body = body.body())
 
-        val url = ""
-
-        val responseEntity = restTemplate.postForEntity<String>(url, request, String::class.java)
-
-        this.verifyStatusCode(body = responseEntity.body)
-
-        return responseEntity.body
+        return body.body()
     }
 
     private fun gson(): Gson = Gson()
