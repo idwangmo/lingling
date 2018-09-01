@@ -21,7 +21,7 @@ class LingLingService {
         get() {
             val body = this.sendRequest(Any(), LinglingURLConfig.GET_LING_LING_ID)
             val response = gson().fromJson<LingLingResponse>(body, LingLingResponse::class.java)
-            return response.requestResult?.linglingId
+            return response.responseResult?.linglingId
         }
 
     /**
@@ -30,13 +30,13 @@ class LingLingService {
     fun addDevice(request: LinglingAddDeviceRequest): Long? {
         val body = this.sendRequest(request, LinglingURLConfig.ADD_DEVICE)
         val response = gson().fromJson<LingLingResponse>(body, LingLingResponse::class.java)
-        return response.requestResult?.deviceId
+        return response.responseResult?.deviceId
     }
 
     /**
      * 删除设备
      */
-    fun deleteDevice(request: LinglingDeleteDeviceReqeust) {
+    fun deleteDevice(request: LinglingDeleteDeviceReqeuest) {
         this.sendRequest(request, LinglingURLConfig.DEL_DEVICE)
     }
 
@@ -50,11 +50,102 @@ class LingLingService {
     /**
      * 查询设备列表
      */
-    fun queryDevices(): List<RequestResult> {
+    fun queryDevices(): List<ResponseResult> {
         val body = this.sendRequest(Any(), LinglingURLConfig.QUERY_DEVICE_LIST)
 
         val response = gson().fromJson<LinglingDeviceQueryResponse>(body, LinglingDeviceQueryResponse::class.java)
-        return response.requestResult
+        return response.responseResult
+    }
+
+    /**
+     * 生成开门密钥
+     */
+    fun generateOpenDoorKey(linglingGenerateKeyRequest: LinglingGenerateKeyRequest): ResponseResult? {
+        val body = this.sendRequest(linglingGenerateKeyRequest, LinglingURLConfig.MAKE_SDK_KEY)
+
+        val response = gson().fromJson<LingLingResponse>(body, LingLingResponse::class.java)
+
+        return response.responseResult
+    }
+
+    /**
+     * 批量生成令令id
+     */
+    fun batchGenerateIds(linglingBatchIdsRequest: LinglingBatchIdsRequest): ResponseResult? {
+        val body = this.sendRequest(linglingBatchIdsRequest, LinglingURLConfig.GET_LING_LING_ID)
+
+        val response = gson().fromJson<LingLingResponse>(body, LingLingResponse::class.java)
+        return response.responseResult
+
+    }
+
+    /**
+     * 生成业主二维码
+     */
+    fun generateOwnerQrCode(linglingGenerateOwnerQrCodeRequest: LinglingGenerateOwnerQrCodeRequest): ResponseResult? {
+        val body = this.sendRequest(linglingGenerateOwnerQrCodeRequest, LinglingURLConfig.ADD_OWNER_QR_CODE)
+
+        val response = gson().fromJson<LingLingResponse>(body, LingLingResponse::class.java)
+
+        return response.responseResult
+
+    }
+
+    /**
+     * 添加门禁访客二维码
+     */
+    fun addVisitorQrCode(linglingGenerateOwnerQrCodeRequest: LinglingGenerateOwnerQrCodeRequest): ResponseResult? {
+        val body = this.sendRequest(linglingGenerateOwnerQrCodeRequest, LinglingURLConfig.ADD_VISITOR_QR_CODE)
+
+        val response = gson().fromJson<LingLingResponse>(body, LingLingResponse::class.java)
+
+        return response.responseResult
+    }
+
+    /**
+     * 日志查询
+     */
+    fun selectOpenDoorLog(linglingSelectOpenDoorLongRequest: LinglingSelectOpenDoorLongRequest): List<LinglingLogQueryResponseBody> {
+        val body = this.sendRequest(linglingSelectOpenDoorLongRequest, LinglingURLConfig.SELECT_OPEN_DOOR_LOG)
+
+        val response = gson().fromJson<LinglingLogQueryResponse>(body, LinglingLogQueryResponse::class.java)
+
+        return response.responseResult
+    }
+
+    /**
+     * 添加开门的门禁卡
+     */
+    fun addOpenDoorCard(linglingAddDeviceRequest: LinglingAddDeviceRequest) {
+        this.sendRequest(linglingAddDeviceRequest, LinglingURLConfig.ADD_OPEN_DOOR_CARD)
+    }
+
+    /**
+     * 删除门禁卡
+     */
+    fun delOpenDoorCard(linglingOpenDoorCardRequest: LinglingOpenDoorCardRequest) {
+        this.sendRequest(linglingOpenDoorCardRequest, LinglingURLConfig.DEL_OPEN_DOOR_CARD)
+    }
+
+    /**
+     * 查询门禁卡
+     */
+    fun queryOpenDoorCard(linglingOpenDoorCardRequest: LinglingOpenDoorCardRequest): String? {
+        return this.sendRequest(linglingOpenDoorCardRequest, LinglingURLConfig.QUERY_OPEN_DOOR_CARD)
+    }
+
+    /**
+     * 更新门禁卡权限
+     */
+    fun updateOpenDoorCard(linglingUpdateOpenDoorCardRequest: LinglingUpdateOpenDoorCardRequest) {
+        this.sendRequest(linglingUpdateOpenDoorCardRequest, LinglingURLConfig.UPDATE_OPEN_DOOR_CARD)
+    }
+
+    /**
+     * 远程开门
+     */
+    fun remoteOpenDoor(linglingRemoteOpenDoorRequest: LinglingRemoteOpenDoorRequest) {
+        this.sendRequest(linglingRemoteOpenDoorRequest, LinglingURLConfig.REMOTE_OPEN_DOOR)
     }
 
     private fun sendRequest(any: Any?, action: String): String? {

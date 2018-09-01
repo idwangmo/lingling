@@ -7,7 +7,7 @@ import top.idwangmo.lingling.config.LinglingURLConfig
 class LinglingRequestStaticsSingleton private constructor() {
 
     companion object {
-        fun getInstance() = Holder.INSTANCE
+        fun getInstance() = Holder.INSTANCE!!
     }
 
     private object Holder {
